@@ -3,23 +3,20 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import frc.robot.commands.*;
+import frc.robot.subsystems.*;
 
 import frc.robot.Constants.ButtonMappings;
 import frc.robot.commands.FollowTargets;
-// import frc.robot.Constants.OperatorConstants;
-// import frc.robot.commands.Autos;
-// import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.RunMotor;
-import frc.robot.commands.StopMotor;
-import frc.robot.subsystems.*;
-// import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-// import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.PS4Controller;
-import frc.robot.subsystems.LimelightSubsystem;
-
+//import edu.wpi.first.wpilibj.Joystick;
+// import frc.robot.Constants.OperatorConstants;
+// import frc.robot.commands.Autos;
+// import frc.robot.commands.ExampleCommand;
+// import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 
 /**
@@ -33,25 +30,32 @@ public class RobotContainer {
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveSubsystem DriveSubsystem = new DriveSubsystem();
   private final LimelightSubsystem LimelightSubsystem = new LimelightSubsystem();
-  //private final ArmSubsystem ArmSystem = new ArmSubsystem();
+  private final ArmSubsystem ArmSubsystem = new ArmSubsystem();
 
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  // private final CommandPS4Controller m_driverController =
-  //     new CommandPS4Controller(OperatorConstants.KDRIVERCONTROLLERPORT);
-
-  PS4Controller ps4 = new PS4Controller(Constants.Driver_Controller);
+  // **** feb 24
+  private final SparkmaxMotor testSparkmaxMotor = new SparkmaxMotor(4); // **** Feb 24
+  
+  private final PS4Controller ps4 = new PS4Controller(Constants.Driver_Controller);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    initializeRobotContainer();
-    
+        
   }
-  private void initializeRobotContainer(){
-    DriveSubsystem.initialize();
-    //****LimelightSubsystem.setPipeline(9);//set for brandons april tag pipeline
+
+  public LimelightSubsystem getLimelightSubsystem(){
+    return this.LimelightSubsystem;
   }
+  public ArmSubsystem getArmSubsystem(){
+    return this.ArmSubsystem;
+  }
+  public DriveSubsystem getDriveSubsystem(){
+    return this.DriveSubsystem;
+  }
+  public SparkmaxMotor getMotorTest(){ // **** feb 24
+    return this.testSparkmaxMotor;
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -70,19 +74,29 @@ public class RobotContainer {
     // cancelling on release.
 
     // PS4 bindings
-    new JoystickButton(ps4, ButtonMappings.R1).whileTrue((LimelightSubsystem.setPipeline9Command()));//changed to whileTrue
-    new JoystickButton(ps4, ButtonMappings.R1).whileFalse(new StopMotor(DriveSubsystem));//changed to whileFalse
-    DriveSubsystem.setDefaultCommand(
-          DriveSubsystem.arcadeDriveSquaredCommand(
-              () -> -ps4.getLeftY(), () -> -ps4.getLeftX())
+    new JoystickButton(this.ps4, ButtonMappings.R1).whileTrue((this.LimelightSubsystem.setPipeline9Command()));//changed to whileTrue
+    new JoystickButton(this.ps4, ButtonMappings.R1).whileFalse(new StopMotor(this.DriveSubsystem));//changed to whileFalse
+
+
+    //default commands
+    this.LimelightSubsystem.setDefaultCommand(
+      this.LimelightSubsystem.checkForTargetsCommand()
     );
-    LimelightSubsystem.setDefaultCommand(
-      LimelightSubsystem.checkForTargetsCommand()
+
+    this.DriveSubsystem.setDefaultCommand(
+          this.DriveSubsystem.arcadeDriveSquaredCommand(
+              () -> -this.ps4.getLeftY(), () -> -this.ps4.getLeftX())
     );
+
+    this.testSparkmaxMotor.setDefaultCommand(// **** Feb 24
+          this.testSparkmaxMotor.joystickMotorCommand(
+              () -> Math.abs(this.ps4.getRightY()*20))
+    );
+
 
     //Trigger bindings (events)
     //new Trigger(LimeLight::hasTargets).onTrue(LimeLight.getTargetsCommand());
-    new Trigger(LimelightSubsystem::hasTargets).whileTrue( new FollowTargets(DriveSubsystem,LimelightSubsystem));
+    new Trigger(this.LimelightSubsystem::hasTargets).whileTrue( new FollowTargets(this.DriveSubsystem,this.LimelightSubsystem));
 
     
   }
