@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -14,7 +7,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.SparkmaxMotor;
+//import frc.robot.subsystems.SparkmaxMotor;
 
 
 public class Robot extends TimedRobot {
@@ -22,7 +15,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private static LimelightSubsystem m_LimelightSubsystem;
-  private static SparkmaxMotor m_MotorTest; // **** feb 24
+  //private static SparkmaxMotor m_MotorTest; // **** feb 24
 
   
   @Override
@@ -30,14 +23,14 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer();
     m_LimelightSubsystem = m_robotContainer.getLimelightSubsystem();
-    m_MotorTest = m_robotContainer.getMotorTest(); // **** feb 24
+    //m_MotorTest = m_robotContainer.getMotorTest(); // **** feb 24
 
   }
   @Override
   public void teleopInit() {
 
     m_LimelightSubsystem.setPipeline(9);
-    m_MotorTest.startTimer();
+    //m_MotorTest.startTimer();
 
   }
   @Override
