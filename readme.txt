@@ -1,2 +1,1 @@
-This was the last file we made
-it currently sets the value of pipeline to the value of the elbow encoder. this must be fixed before using limelight
+This was a working version of an interface to the sparkmax originally only running on the separate RoboRio, never fully integrated into the real robot
