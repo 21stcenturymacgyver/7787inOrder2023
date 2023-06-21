@@ -5,9 +5,16 @@ import frc.robot.subsystems.*;
 
 import frc.robot.Constants.ButtonMappings;
 import frc.robot.commands.FollowTargets;
+import frc.robot.commands.auto.DriveAndPark;
+import frc.robot.commands.auto.ScoreCone;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
   
@@ -17,14 +24,27 @@ public class RobotContainer {
   private final ArmSubsystem ArmSubsystem = new ArmSubsystem();
   private final NavXSubsystem navXSubsystem = new NavXSubsystem();
   private final Auto m_autoCommand = new Auto(DriveSubsystem, ArmSubsystem);
+
+  private final SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
   
   // private final SparkmaxMotor testSparkmaxMotor = new SparkmaxMotor(5); // **** Feb 24
   
   // Creates the PS4Controller
   private final PS4Controller ps4 = new PS4Controller(Constants.DRIVER_CONTROLLER);
   
+  private void initializeAutoChooser() {
+    m_autoChooser.setDefaultOption("Do nothing", new WaitCommand(0));
+    m_autoChooser.addOption("Drive And Park", new DriveAndPark(DriveSubsystem));
+    m_autoChooser.addOption("Score Cone", new ScoreCone(DriveSubsystem));
+
+    SmartDashboard.putData("Auto Selector", m_autoChooser);
+  }
+  
   // Defines robot container
   public RobotContainer() {
+
+    SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
+    initializeAutoChooser();
 
     // Configure the trigger bindings
     configureBindings();
@@ -101,7 +121,7 @@ public class RobotContainer {
 
     
   }
-  public Auto getAutonomousCommand() {
-    return m_autoCommand;
+  public Command getAutonomousCommand() {
+    return m_autoChooser.getSelected();
   }
 }
