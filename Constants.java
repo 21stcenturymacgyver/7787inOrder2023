@@ -5,7 +5,7 @@ public final class Constants {
   public static final class OperatorConstants {
 
     // Drive Controll Port
-    public static final int K_DRIVER_CONTROLLER_PORT = 0;
+    //public static final int K_DRIVER_CONTROLLER_PORT = 0;
     
   }
 
@@ -20,7 +20,7 @@ public final class Constants {
 
     public static final int THETA1_START = 98; //ANGLE FROM BASE BACK TO SEGMENT 1
     public static final int THETA2_START = 10;//ANGLE FROM ARM SEGMENT  1 TO 2
-    public static final int AZIMUTH_START = 0;
+    public static final int AZIMUTH_START = -9;//for claw open positon
 
   
 
@@ -126,6 +126,7 @@ public final class Constants {
   }
 
   // Driver Controller
-  public static final int DRIVER_CONTROLLER = 0;
+  public static final int DRIVER_CONTROLLER_TAIGA = 0;
 
+  public static final int DRIVER_CONTROLLER_BRI = 1;
 }

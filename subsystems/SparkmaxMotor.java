@@ -64,6 +64,40 @@ public class SparkmaxMotor extends SubsystemBase {
     //Timer1.start();//
   }
 
+  public SparkmaxMotor(int deviceID,Boolean limitSwitchDirection, double l_max_output, double l_min_output) {
+    m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
+    m_motor.restoreFactoryDefaults();
+    m_pidController = m_motor.getPIDController();
+    m_encoder = m_motor.getEncoder();
+    limitSwitch = m_motor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    
+    
+    
+    
+    
+    // PID coefficients
+    kP = 0.1; 
+    kI = 0;//1e-4;
+    kD = 0.01; //was 1 feb 24 test
+    kIz = 0; 
+    kFF = 0; 
+    kMaxOutput = l_max_output;//1; march 2 test
+    kMinOutput = -l_min_output;//-1; march 2 test
+
+    // set PID coefficients
+    m_pidController.setP(kP);
+    m_pidController.setI(kI);
+    m_pidController.setD(kD);
+    m_pidController.setIZone(kIz);
+    m_pidController.setFF(kFF);
+    m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+    //on creation of the motor
+    // **** feb 24
+    //Timer1 = new Timer();//
+    //Timer1.start();//
+  }
+
   // private void runToTimer(){
   //   position =  Timer1.get();//
    

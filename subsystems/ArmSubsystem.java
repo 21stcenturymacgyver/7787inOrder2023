@@ -17,10 +17,10 @@ import java.util.function.DoubleSupplier;
 public class ArmSubsystem extends SubsystemBase {
 
   // Define all of the motors
-  SparkmaxMotor AzimuthMotor = new SparkmaxMotor(ArmConstants.AZIMUTH_MOTOR_ID, ArmConstants.AZIMUTH_LIMIT_SWITH_DIRECTION);
-  SparkmaxMotor ShoulderMotor = new SparkmaxMotor(ArmConstants.SHOULDER_MOTOR_ID, ArmConstants.SHOULDER_LIMIT_SWITCH_DIRECTION);
-  SparkmaxMotor ElbowMotor = new SparkmaxMotor(ArmConstants.ELBOW_MOTOR_ID, ArmConstants.ELBOW_LIMIT_SWITCH_DIRECTION);
-  SparkmaxMotor ClawMotor = new SparkmaxMotor(ArmConstants.CLAW_MOTOR_ID, ArmConstants.CLAW_LIMIT_SWITCH_DIRECTION); 
+  SparkmaxMotor AzimuthMotor = new SparkmaxMotor(ArmConstants.AZIMUTH_MOTOR_ID, ArmConstants.AZIMUTH_LIMIT_SWITH_DIRECTION,0.3, 0.3);
+  SparkmaxMotor ShoulderMotor = new SparkmaxMotor(ArmConstants.SHOULDER_MOTOR_ID, ArmConstants.SHOULDER_LIMIT_SWITCH_DIRECTION,0.3, 0.3);
+  SparkmaxMotor ElbowMotor = new SparkmaxMotor(ArmConstants.ELBOW_MOTOR_ID, ArmConstants.ELBOW_LIMIT_SWITCH_DIRECTION,0.4,0.4);
+  SparkmaxMotor ClawMotor = new SparkmaxMotor(ArmConstants.CLAW_MOTOR_ID, ArmConstants.CLAW_LIMIT_SWITCH_DIRECTION,0.5,0.2); 
 
   private static float theta1CurrentSetting=ArmConstants.THETA1_START;
   private static float theta2CurrentSetting= ArmConstants.THETA2_START;
@@ -114,6 +114,21 @@ public class ArmSubsystem extends SubsystemBase {
     return runOnce(()->setArmPosition(c_theta1, c_theta2));
 
   }
+  public CommandBase setArmAzimuthCommand( float l_azimuth) {
+
+    return runOnce(()->setArmPosition(theta1CurrentSetting, theta2CurrentSetting, l_azimuth));
+
+  }
+  public CommandBase setArmAzimuthR30Command() {
+
+    return runOnce(()->setArmPosition(theta1CurrentSetting, theta2CurrentSetting, azimuthCurrentSetting-30));
+
+  }
+  public CommandBase setArmAzimuthL30Command() {
+
+    return runOnce(()->setArmPosition(theta1CurrentSetting, theta2CurrentSetting, azimuthCurrentSetting+30));
+
+  }  
   public CommandBase setArmPositionCommand( float c_theta1, float c_theta2, float c_azimuth) {
 
     return runOnce(()->setArmPosition(c_theta1, c_theta2,c_azimuth));
