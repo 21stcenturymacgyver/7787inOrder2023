@@ -61,11 +61,11 @@ public class RobotContainer {
     //new JoystickButton(this.ps4, ButtonMappings.CROSS).onTrue(this.DriveSubsystem.compressorOff());
     //new JoystickButton(this.ps4, ButtonMappings.L1).whileTrue(this.DriveSubsystem.driveToPositionCommand(2.0));
     // new JoystickButton(this.ps4, ButtonMappings.L2).onTrue(this.DriveSubsystem.spinToPosition(360.0));
-    new JoystickButton(this.ps4, ButtonMappings.START).onTrue(this.ArmSubsystem.RunArmToPositionCommand(90, 15,0));//home test limit
-    new JoystickButton(this.ps4, ButtonMappings.CIRCLE).onTrue(this.ArmSubsystem.RunArmToPositionCommand(90, 79, 90));//medium left
-    new JoystickButton(this.ps4, ButtonMappings.SQUARE).onTrue(this.ArmSubsystem.RunArmToPositionCommand(90, 79, 0));  // Medium
-    new JoystickButton(this.ps4, ButtonMappings.CROSS).onTrue(this.ArmSubsystem.RunArmToPositionCommand(66, 123, 90)); //High
-    new JoystickButton(this.ps4, ButtonMappings.TRIANGLE).onTrue(this.ArmSubsystem.RunArmToPositionCommand(112, 63));//substation
+    new JoystickButton(this.ps4, ButtonMappings.START).onTrue(this.ArmSubsystem.setArmPositionCommand(90, 15,0));//home test limit
+    new JoystickButton(this.ps4, ButtonMappings.CIRCLE).onTrue(this.ArmSubsystem.setArmPositionCommand(90, 79, 90));//medium left
+    new JoystickButton(this.ps4, ButtonMappings.SQUARE).onTrue(this.ArmSubsystem.setArmPositionCommand(90, 79, 0));  // Medium
+    new JoystickButton(this.ps4, ButtonMappings.CROSS).onTrue(this.ArmSubsystem.setArmPositionCommand(66, 123, 90)); //High
+    new JoystickButton(this.ps4, ButtonMappings.TRIANGLE).onTrue(this.ArmSubsystem.setArmPositionCommand(112, 63));//substation
     // Circle, claw toggle
     //  Second Controller  Fine Controll :(
 
@@ -79,6 +79,7 @@ public class RobotContainer {
     // Drive Subsytem default commands
     this.DriveSubsystem.setDefaultCommand(
           this.DriveSubsystem.arcadeDriveSquaredCommand(
+            //() -> (0),() -> (0))//**** March 1st disable drive
               () -> -this.ps4.getLeftY(), () -> -this.ps4.getRightX()) // Taiga Drive **** Feb 28 to test encoders for drive motors
 
 
@@ -90,8 +91,9 @@ public class RobotContainer {
     //          () -> (this.ps4.getRightX()*-30),() -> (this.ps4.getR2Axis()*30+30),() -> (this.ps4.getRightY()*-80),() -> (this.ps4.getL2Axis()*-20))
     // );
     this.ArmSubsystem.setDefaultCommand(
-         this.ArmSubsystem.joystickMotorCommand(
-             () -> (0),() -> (0),() -> (0),() -> (this.ps4.getR2Axis()*30+30))
+         this.ArmSubsystem.analogArmInputsCommand(//azimuth shoulder elbow claw
+              () -> (0),() -> (0),() -> (0),() -> (this.ps4.getR2Axis()*30+30))//1 **** Marhc 1st
+             //() -> (this.ps4.getRightX()*-30),() -> (this.ps4.getRightY()*-30),() -> (this.ps4.getLeftY()*-30),() -> ((this.ps4.getR2Axis()+1)*30))// for fine controll add to other controller
     );
 
     // New command to follow targets while true.

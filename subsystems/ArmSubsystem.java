@@ -22,6 +22,15 @@ public class ArmSubsystem extends SubsystemBase {
   SparkmaxMotor ElbowMotor = new SparkmaxMotor(ArmConstants.ELBOW_MOTOR_ID, ArmConstants.ELBOW_LIMIT_SWITCH_DIRECTION);
   SparkmaxMotor ClawMotor = new SparkmaxMotor(ArmConstants.CLAW_MOTOR_ID, ArmConstants.CLAW_LIMIT_SWITCH_DIRECTION); 
 
+  private static float theta1CurrentSetting=ArmConstants.THETA1_START;
+  private static float theta2CurrentSetting= ArmConstants.THETA2_START;
+  private static float azimuthCurrentSetting=0;
+  // private static float theta1AnalogOffset=0;
+  // private static float theta2AnalogOffset=0;
+  // private static float azimuthAnalogOffset=0;
+  // private static float claw=0;
+
+
   public float[] getArmPosition(float Theta1, float Theta2) {
 
     // Calculations done in Radians
@@ -55,36 +64,12 @@ public class ArmSubsystem extends SubsystemBase {
 
   }
 
-  private void RunAllMotors(double m_Aziumuth, double m_Shoulder, double m_Elbow, double m_Claw) {
+  private void RunAllMotorsToPosition(double m_theta1AnalogOffset,double m_theta2AnalogOffset, double m_azimuthAnalogOffset,double m_claw) {
+    float m_theta1=this.theta1CurrentSetting;
+    float m_theta2=this.theta2CurrentSetting;
+    float m_azimuth = this.azimuthCurrentSetting;
 
-    this.AzimuthMotor.runToposition(m_Aziumuth);
-    this.ShoulderMotor.runToposition(m_Shoulder);
-    this.ElbowMotor.runToposition(m_Elbow);
-    this.ClawMotor.runToposition(m_Claw);
-
-  }
-
-  public CommandBase armToPositionPolar(double Radius, double Height, double Azimuth) {
-
-    return run(()->getArmPosition(0, 0));
-
-  } 
-
-  public CommandBase joystickMotorCommand(DoubleSupplier m_Aziumuth,DoubleSupplier m_Shoulder,DoubleSupplier m_Elbow,DoubleSupplier m_Claw) {
-
-    // A split-stick arcade command, with forward/backward controlled by the left
-    // hand, and turning controlled by the right.
-    return run(() -> this.RunAllMotors(m_Aziumuth.getAsDouble(),m_Shoulder.getAsDouble(),m_Elbow.getAsDouble(),m_Claw.getAsDouble()))
-        .withName("Joystick Arm Motor");
-
-  }
-
-  public CommandBase RunArmToPositionCommand( float c_theta1, float c_theta2) {
-
-       return run(()->RunArmToPosition(c_theta1, c_theta2));
-
-  }
-  public void RunArmToPosition( float m_theta1, float m_theta2) {
+    //checks for software limits
     if (m_theta2<30){
       m_theta1= Math.max(98,m_theta1);//set  minimum angle to 98 when arm is within robot frame perimeter
     }
@@ -93,23 +78,56 @@ public class ArmSubsystem extends SubsystemBase {
       m_theta2=Math.max(m_theta2, 30);//prevent bringing the arm into the perimeter from the side
     }
 
-    ShoulderMotor.runToposition((-m_theta1+ArmConstants.THETA1_START)/ArmConstants.SHOULDER_DEGREES_PER_REVOLUTION);
-    ElbowMotor.runToposition((m_theta2-ArmConstants.THETA2_START)/ArmConstants.ELBOW_DEGREES_PER_REVOLUTION);
-    
-  }
+    //adjustments for offsets and conversions
+
+    ShoulderMotor.runToposition((-m_theta1+ArmConstants.THETA1_START+m_theta1AnalogOffset)/ArmConstants.SHOULDER_DEGREES_PER_REVOLUTION);
+    ElbowMotor.runToposition((m_theta2-ArmConstants.THETA2_START+m_theta2AnalogOffset)/ArmConstants.ELBOW_DEGREES_PER_REVOLUTION);
+    AzimuthMotor.runToposition((m_azimuth-ArmConstants.AZIMUTH_START+m_azimuthAnalogOffset)/ArmConstants.AZIMUTH_DEGREES_PER_REVOLUTION);
+    ClawMotor.runToposition(m_claw);
 
 
-  public CommandBase RunArmToPositionCommand( float Theta1, float Theta2, float Azimuth)  {
-    
-    
-    return run(()->RunArmToPosition(Theta1, Theta2,Azimuth));
 
   }
-  public void RunArmToPosition( float Theta1, float Theta2, float Azimuth) {
 
-    RunArmToPosition(Theta1, Theta2);
-    AzimuthMotor.runToposition(Azimuth/ArmConstants.AZIMUTH_DEGREES_PER_REVOLUTION);//*90/153.6);
-    
+
+
+  public CommandBase analogArmInputsCommand(DoubleSupplier m_Aziumuth,DoubleSupplier m_Shoulder,DoubleSupplier m_Elbow,DoubleSupplier m_Claw) {
+
+    // A split-stick arcade command, with forward/backward controlled by the left
+    // hand, and turning controlled by the right.
+    return run(() -> this.RunAllMotorsToPosition(m_Shoulder.getAsDouble(),m_Elbow.getAsDouble(),m_Aziumuth.getAsDouble(),m_Claw.getAsDouble()))
+        .withName("fine tuning Arm Motor");
+
   }
+  public CommandBase noAnalogArmCommand() {
+
+    // A split-stick arcade command, with forward/backward controlled by the left
+    // hand, and turning controlled by the right.
+    return run(() -> this.RunAllMotorsToPosition(0,0,0,0))
+        .withName("fixed arm position");
+
+  }
+  
+
+  public CommandBase setArmPositionCommand( float c_theta1, float c_theta2) {
+
+    return runOnce(()->setArmPosition(c_theta1, c_theta2));
+
+  }
+  public CommandBase setArmPositionCommand( float c_theta1, float c_theta2, float c_azimuth) {
+
+    return runOnce(()->setArmPosition(c_theta1, c_theta2,c_azimuth));
+
+}
+  public void setArmPosition( float m_theta1, float m_theta2) {
+    theta1CurrentSetting=m_theta1;
+    theta2CurrentSetting=m_theta2;   
+  }
+  public void setArmPosition( float m_theta1, float m_theta2, float m_azimuth) {
+    theta1CurrentSetting=m_theta1;
+    theta2CurrentSetting=m_theta2;  
+    azimuthCurrentSetting=m_azimuth; 
+  }
+
 
 }

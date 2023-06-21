@@ -15,10 +15,10 @@ public final class Autos {
   }
 
   // Basic  auto for the Arm Subsystem.
-  public static CommandBase exampleAutoArm(ArmSubsystem subsystem) {
-    return Commands.sequence(subsystem.armToPositionPolar(36,52,0), 
-                             subsystem.armToPositionPolar(36,36,0));
-  }
+  // public static CommandBase exampleAutoArm(ArmSubsystem subsystem) {
+  //   return Commands.sequence(subsystem.armToPositionPolar(36,52,0), 
+  //                            subsystem.armToPositionPolar(36,36,0));
+  // }
 
   // Handles an error in the auto for an Unsupported Operation Exception.
   private Autos() {
