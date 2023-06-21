@@ -4,9 +4,8 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
 import frc.robot.Constants.ButtonMappings;
-import frc.robot.commands.FollowTargets;
-import frc.robot.commands.auto.DriveAndPark;
-import frc.robot.commands.auto.ScoreCone;
+import frc.robot.commands.auto.*;
+
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -26,7 +25,7 @@ public class RobotContainer {
   private final LimelightSubsystem LimelightSubsystem = new LimelightSubsystem();
   private final ArmSubsystem ArmSubsystem = new ArmSubsystem();
   private final NavXSubsystem navXSubsystem = new NavXSubsystem();
-  private final MotorAutoTest motorAutoTest = new MotorAutoTest();
+  
 
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
 
@@ -40,9 +39,10 @@ public class RobotContainer {
   private final PS4Controller ps4_bri = new PS4Controller(Constants.DRIVER_CONTROLLER_BRI);
 
   private void initializeAutoChooser() {
-    m_autoChooser.setDefaultOption("Do nothing", new WaitCommand(0));
-    m_autoChooser.addOption("Drive And Park", new DriveAndPark(motorAutoTest));
-    m_autoChooser.addOption("Score Cone", new ScoreCone(driveSubsystem));
+    m_autoChooser.setDefaultOption("Do one second", new RunMotorTimed(this.driveSubsystem,1));
+    m_autoChooser.addOption("run motor 3s", new RunMotorTimed(this.driveSubsystem,3));
+    m_autoChooser.addOption("Sequential 4 seconds", new DriveAndParkBrandon(this.driveSubsystem));
+    m_autoChooser.addOption("drive120", new DriveTenFeet(this.driveSubsystem));
 
     SmartDashboard.putData("Auto Selector", m_autoChooser);
   }
@@ -50,12 +50,12 @@ public class RobotContainer {
   // Defines robot container
   public RobotContainer() {
 
-
+    configureBindings();
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
     initializeAutoChooser();
 
     // Configure the trigger bindings
-    configureBindings();
+    
         
   }
 
@@ -104,6 +104,10 @@ public class RobotContainer {
 
     
 
+    
+  }
+  public void configureDefaultCommands() {
+
     // Limelight Subsytem default commands
     this.LimelightSubsystem.setDefaultCommand(
       this.LimelightSubsystem.checkForTargetsCommand()
@@ -116,7 +120,7 @@ public class RobotContainer {
               () -> -this.ps4_taiga.getLeftY(), () -> -this.ps4_taiga.getRightX()) // Taiga Drive **** Feb 28 to test encoders for drive motors
 
 
-    );
+     );
 
     // **** Feb 24
     // this.ArmSubsystem.setDefaultCommand(
@@ -135,7 +139,9 @@ public class RobotContainer {
 
     
   }
+
   public Command getAutonomousCommand() {
     return m_autoChooser.getSelected();
+    //return new RunMotor(this.driveSubsystem,5);
   }
 }

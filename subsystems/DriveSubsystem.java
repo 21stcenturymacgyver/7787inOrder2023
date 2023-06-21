@@ -64,12 +64,26 @@ public class DriveSubsystem extends SubsystemBase {
     EncoderRight.setDistancePerPulse(DriveConstants.ENCODER_DISTANCE_PER_PULSE_INCHES);
     
   }
+  public double getLeftEncoderDistance(){
+    double encoderDistance = EncoderLeft.getDistance();
+    SmartDashboard.putNumber("leftEncoder Distance", encoderDistance);
+    return encoderDistance;
+  }
+  public double getRightEncoderDistance(){
+    return EncoderRight.getDistance();
+  }
 
   // simple arcade drive with squared inputs
   public void arcadeDriveSquared(Double fwd, Double rot) {
     SmartDashboard.putNumber("encoder left", EncoderLeft.get());
 
     DiffDrive.arcadeDrive(Math.abs(fwd) * fwd,Math.abs(rot) * rot);
+
+  }
+  public void arcadeDrive(Double fwd, Double rot) {
+    SmartDashboard.putNumber("encoder left", EncoderLeft.get());
+
+    DiffDrive.arcadeDrive(fwd, rot);
 
   }
 
