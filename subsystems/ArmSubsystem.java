@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
-import frc.robot.Constants;
+//import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
-import edu.wpi.first.wpilibj2.command.Command;
+//import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 // import com.revrobotics.CANSparkMax;
 // import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class ArmSubsystem extends SubsystemBase {
@@ -79,15 +79,22 @@ public class ArmSubsystem extends SubsystemBase {
 
   }
 
-  public CommandBase RunArmToPositionCommand( float Theta1, float Theta2) {
+  public CommandBase RunArmToPositionCommand( float c_theta1, float c_theta2) {
 
-       return run(()->RunArmToPosition(Theta1, Theta2));
+       return run(()->RunArmToPosition(c_theta1, c_theta2));
 
   }
-  public void RunArmToPosition( float Theta1, float Theta2) {
+  public void RunArmToPosition( float m_theta1, float m_theta2) {
+    if (m_theta2<30){
+      m_theta1= Math.max(98,m_theta1);//set  minimum angle to 98 when arm is within robot frame perimeter
+    }
+    m_theta2=Math.max(m_theta2, 9);// prevent the elbow from trying to close less then start
+    if(m_theta1<97){
+      m_theta2=Math.max(m_theta2, 30);//prevent bringing the arm into the perimeter from the side
+    }
 
-    ShoulderMotor.runToposition(Theta1/ArmConstants.SHOULDER_DEGREES_PER_REVOLUTION);
-    ElbowMotor.runToposition(Theta2/ArmConstants.ELBOW_DEGREES_PER_REVOLUTION);
+    ShoulderMotor.runToposition((-m_theta1+ArmConstants.THETA1_START)/ArmConstants.SHOULDER_DEGREES_PER_REVOLUTION);
+    ElbowMotor.runToposition((m_theta2-ArmConstants.THETA2_START)/ArmConstants.ELBOW_DEGREES_PER_REVOLUTION);
     
   }
 
@@ -100,8 +107,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
   public void RunArmToPosition( float Theta1, float Theta2, float Azimuth) {
 
-    ShoulderMotor.runToposition(Theta1/ArmConstants.SHOULDER_DEGREES_PER_REVOLUTION);
-    ElbowMotor.runToposition(Theta2/ArmConstants.ELBOW_DEGREES_PER_REVOLUTION);
+    RunArmToPosition(Theta1, Theta2);
     AzimuthMotor.runToposition(Azimuth/ArmConstants.AZIMUTH_DEGREES_PER_REVOLUTION);//*90/153.6);
     
   }

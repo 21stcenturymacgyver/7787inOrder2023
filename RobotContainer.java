@@ -15,6 +15,8 @@ public class RobotContainer {
   private final DriveSubsystem DriveSubsystem = new DriveSubsystem();
   private final LimelightSubsystem LimelightSubsystem = new LimelightSubsystem();
   private final ArmSubsystem ArmSubsystem = new ArmSubsystem();
+  private final NavXSubsystem navXSubsystem = new NavXSubsystem();
+  private final Auto m_autoCommand = new Auto(DriveSubsystem, ArmSubsystem);
   
   // private final SparkmaxMotor testSparkmaxMotor = new SparkmaxMotor(5); // **** Feb 24
   
@@ -39,6 +41,9 @@ public class RobotContainer {
   public DriveSubsystem getDriveSubsystem(){
     return this.DriveSubsystem;
   }
+  public NavXSubsystem getNavXSubsystem() {
+    return this.navXSubsystem;
+  }
 
   // 
   // public SparkmaxMotor getMotorTest(){ 
@@ -48,19 +53,21 @@ public class RobotContainer {
   private void configureBindings() {
   
     // PS4 bindings
-    new JoystickButton(this.ps4, ButtonMappings.R1).whileTrue((this.LimelightSubsystem.setPipeline9Command()));//changed to whileTrue
-    new JoystickButton(this.ps4, ButtonMappings.R1).whileFalse(new StopMotor(this.DriveSubsystem));//changed to whileFalse
-    new JoystickButton(this.ps4, ButtonMappings.TRIANGLE).onTrue(this.DriveSubsystem.shiftHigh());
-    new JoystickButton(this.ps4, ButtonMappings.CIRCLE).onTrue(this.DriveSubsystem.shiftLow());
-    new JoystickButton(this.ps4, ButtonMappings.SQUARE).onTrue(this.DriveSubsystem.compressorOn());
-    new JoystickButton(this.ps4, ButtonMappings.CROSS).onTrue(this.DriveSubsystem.compressorOff());
-     new JoystickButton(this.ps4, ButtonMappings.L1).whileTrue(this.DriveSubsystem.driveToPositionCommand(2.0));
+    // new JoystickButton(this.ps4, ButtonMappings.R1).whileTrue((this.LimelightSubsystem.setPipeline9Command()));//changed to whileTrue
+    // new JoystickButton(this.ps4, ButtonMappings.R1).whileFalse(new StopMotor(this.DriveSubsystem));//changed to whileFalse
+    new JoystickButton(this.ps4, ButtonMappings.L1).onTrue(this.DriveSubsystem.shiftHigh());
+    new JoystickButton(this.ps4, ButtonMappings.R1).onTrue(this.DriveSubsystem.shiftLow());
+    //new JoystickButton(this.ps4, ButtonMappings.SQUARE).onTrue(this.DriveSubsystem.compressorOn());
+    //new JoystickButton(this.ps4, ButtonMappings.CROSS).onTrue(this.DriveSubsystem.compressorOff());
+    //new JoystickButton(this.ps4, ButtonMappings.L1).whileTrue(this.DriveSubsystem.driveToPositionCommand(2.0));
     // new JoystickButton(this.ps4, ButtonMappings.L2).onTrue(this.DriveSubsystem.spinToPosition(360.0));
-    new JoystickButton(this.ps4, ButtonMappings.START).whileTrue(this.ArmSubsystem.RunArmToPositionCommand(0, 0,0));
-    //new JoystickButton(this.ps4, ButtonMappings.START).onTrue(this.ArmSubsystem.RunArmToPosition(10, 10));
-    new JoystickButton(this.ps4, ButtonMappings.R3).onTrue(this.ArmSubsystem.RunArmToPositionCommand(-20, -20, 0));
-    new JoystickButton(this.ps4, ButtonMappings.L3).onTrue(this.ArmSubsystem.RunArmToPositionCommand(0, 0, -20));
-    
+    new JoystickButton(this.ps4, ButtonMappings.START).onTrue(this.ArmSubsystem.RunArmToPositionCommand(90, 15,0));//home test limit
+    new JoystickButton(this.ps4, ButtonMappings.CIRCLE).onTrue(this.ArmSubsystem.RunArmToPositionCommand(90, 79, 90));//medium left
+    new JoystickButton(this.ps4, ButtonMappings.SQUARE).onTrue(this.ArmSubsystem.RunArmToPositionCommand(90, 79, 0));  // Medium
+    new JoystickButton(this.ps4, ButtonMappings.CROSS).onTrue(this.ArmSubsystem.RunArmToPositionCommand(66, 123, 90)); //High
+    new JoystickButton(this.ps4, ButtonMappings.TRIANGLE).onTrue(this.ArmSubsystem.RunArmToPositionCommand(112, 63));//substation
+    // Circle, claw toggle
+    //  Second Controller  Fine Controll :(
 
     
 
@@ -72,7 +79,7 @@ public class RobotContainer {
     // Drive Subsytem default commands
     this.DriveSubsystem.setDefaultCommand(
           this.DriveSubsystem.arcadeDriveSquaredCommand(
-              () -> -this.ps4.getLeftY(), () -> -this.ps4.getLeftX()) // **** Feb 28 to test encoders for drive motors
+              () -> -this.ps4.getLeftY(), () -> -this.ps4.getRightX()) // Taiga Drive **** Feb 28 to test encoders for drive motors
 
 
     );
@@ -90,5 +97,9 @@ public class RobotContainer {
     // New command to follow targets while true.
     //new Trigger(this.LimelightSubsystem::hasTargets).whileTrue( new FollowTargets(this.DriveSubsystem,this.LimelightSubsystem));
 
+    
+  }
+  public Auto getAutonomousCommand() {
+    return m_autoCommand;
   }
 }

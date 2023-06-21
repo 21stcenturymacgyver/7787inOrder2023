@@ -18,6 +18,12 @@ public final class Constants {
     public static final int THETA1_MIN = 30;
     public static final int THETA2_MIN = 30;
 
+    public static final int THETA1_START = 98; //ANGLE FROM BASE BACK TO SEGMENT 1
+    public static final int THETA2_START = 10;//ANGLE FROM ARM SEGMENT  1 TO 2
+    public static final int AZIMUTH_START = 0;
+
+  
+
     // Arm Lengths
     public static final int ARM_LENGTH1 = 40; // Arm Length is in inches
     public static final int ARM_LENGTH2 = ARM_LENGTH1; 

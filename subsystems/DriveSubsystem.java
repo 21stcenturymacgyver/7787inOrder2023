@@ -20,6 +20,8 @@ import java.util.function.DoubleSupplier;
 //note, constants need to be updated as of Feb 20
 public class DriveSubsystem extends SubsystemBase {
 
+  NavXSubsystem navX;
+
   private final VictorSP MotorLeft1 = new VictorSP(DriveConstants.MOTOR_LEFT1_PORT);
   private final VictorSP MotorLeft2 = new VictorSP(DriveConstants.MOTOR_LEFT2_PORT);  
   private final VictorSP MotorRight1 = new VictorSP(DriveConstants.MOTOR_RIGHT1_PORT);
@@ -86,7 +88,7 @@ public class DriveSubsystem extends SubsystemBase {
   PIDController drivePositionLeftPID = new PIDController(1, 0.0, 0.010);//currently set 1 for no ID feedback //Feb28
   PIDController drivePositionRightPID = new PIDController(1, 0.00, 0.010);//currently set 1 for no ID feedback //Feb28
 
-  public CommandBase driveToPositionCommand(Double m_fwdInches){  // **** Changed from void to Command for Testing
+  public CommandBase driveToPositionCommand(double m_fwdInches){  // **** Changed from void to Command for Testing
     //double adaptedrot= rot/(1+((EncoderLeft.getRate()+EncoderRight.getRate())*DriveConstants.ADAPTIVE_STEERING_SENSITIVITY));
     int m_LeftOffset=EncoderLeft.get();
     int m_RightOffset=EncoderRight.get();
@@ -100,6 +102,27 @@ public class DriveSubsystem extends SubsystemBase {
     //DiffDrive.tankDrive(m_PIDLeftValue, m_PIDRightValue); **** changed to command based form for testing
     return run( ()->{driveToEncoderPosition(m_leftPositionTarget,m_rightPositionTarget);});
   }
+
+  public void balanceRobot() {
+
+    if (Math.abs(navX.navXPitch()) > 5) {
+
+      while(navX.navXPitch()>9) {
+        driveToPositionCommand(1);
+      }
+
+      while(navX.navXPitch()<-9) {
+        driveToPositionCommand(-1);
+      }
+
+    }
+    else {
+      arcadeDriveAdaptiveSteering(0.0,0.0);
+    } 
+  }
+
+
+
   public void driveToEncoderPosition(Double m_leftEncoderTarget,double m_rightEncoderTarget){  // **** Changed from void to Command for Testing
     
     double m_PIDLeftValue= drivePositionLeftPID.calculate(EncoderLeft.get(),m_leftEncoderTarget);
