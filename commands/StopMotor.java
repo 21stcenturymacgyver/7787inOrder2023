@@ -1,22 +1,20 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.DriveSubsystem;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+// Class the Stop Motor
 public class StopMotor extends CommandBase {
-    @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private DriveSubsystem m_subsystem;
-  
-    /**
-     * Creates a new ExampleCommand.
-     *
-     * @param subsystem The subsystem used by this command.
-     */
 
-     public StopMotor(DriveSubsystem subsystem) {
+    // Suppress the warnings that we are too lazy to fix.
+    @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+
+    // Create instance of the drive subsystem
+    private DriveSubsystem m_subsystem;
+    
+    // Adds the dependancies of the command
+    public StopMotor(DriveSubsystem subsystem) {
       m_subsystem = subsystem;
-      // Use addRequirements() here to declare subsystem dependencies.
       addRequirements(subsystem);
       m_subsystem.arcadeDriveSquared((double)0,(double)0);
     }
@@ -28,6 +26,7 @@ public class StopMotor extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+      // Command to stop the motor
       m_subsystem.arcadeDriveSquared((double)0,(double)0);
     }
   

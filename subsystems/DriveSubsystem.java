@@ -14,44 +14,43 @@ import java.util.function.DoubleSupplier;
 //Set up all the system objects (motors and encoders) 
 //note, constants need to be updated as of Feb 20
 public class DriveSubsystem extends SubsystemBase {
-  private final VictorSP MotorLeft1 = new VictorSP(DriveConstants.MOTORLEFT1PORT);
-  private final VictorSP MotorLeft2 = new VictorSP(DriveConstants.MOTORLEFT2PORT);  
-  private final VictorSP MotorRight1 = new VictorSP(DriveConstants.MOTORRIGHT1PORT);
-  private final VictorSP MotorRight2 = new VictorSP(DriveConstants.MOTORRIGHT2PORT);
 
+  private final VictorSP MotorLeft1 = new VictorSP(DriveConstants.MOTOR_LEFT1_PORT);
+  private final VictorSP MotorLeft2 = new VictorSP(DriveConstants.MOTOR_LEFT2_PORT);  
+  private final VictorSP MotorRight1 = new VictorSP(DriveConstants.MOTOR_RIGHT1_PORT);
+  private final VictorSP MotorRight2 = new VictorSP(DriveConstants.MOTOR_RIGHT2_PORT);
 
-// The motors on the right side of the drive.
-private final MotorControllerGroup ControlGroupRightMotors =
+  // The motors on the right side of the drive.
+  private final MotorControllerGroup ControlGroupRightMotors =
   new MotorControllerGroup(MotorRight1,MotorRight2);
 
-// The motors on the left side of the drive
-private final MotorControllerGroup ControlGroupLeftMotors =
+  // The motors on the left side of the drive
+  private final MotorControllerGroup ControlGroupLeftMotors =
   new MotorControllerGroup(MotorLeft1,MotorLeft2);
 
   // The left-side drive encoder
   private final Encoder EncoderLeft =
       new Encoder(
-          DriveConstants.ENCODERPORTSLEFT[0],
-          DriveConstants.ENCODERPORTSLEFT[1],
-          DriveConstants.ENCODERREVERSEDLEFT);
+          DriveConstants.ENCODER_PORTS_LEFT[0],
+          DriveConstants.ENCODER_PORTS_LEFT[1],
+          DriveConstants.ENCODER_REVERSED_LEFT
+          );
 
   // The right-side drive encoder
   private final Encoder EncoderRight =
       new Encoder(
-          DriveConstants.ENCODERPORTSRIGHT[0],
-          DriveConstants.ENCODERPORTSRIGHT[1],
-          DriveConstants.ENCODERREVERSEDRIGHT);
+          DriveConstants.ENCODER_PORTS_RIGHT[0],
+          DriveConstants.ENCODER_PORTS_RIGHT[1],
+          DriveConstants.ENCODER_REVERSED_RIGHT
+          );
 
   private final DifferentialDrive DiffDrive = new DifferentialDrive(ControlGroupLeftMotors,ControlGroupRightMotors);
   
-  
   public void initialize(){
-    //ControlGroupRightMotors.setInverted(true); //must decide if we want to keep this, or switch the wires so that the lights 
-    //on the victor spx motro controllers all flas green when driving forward.
 
     // Sets the distance per pulse for the encoders
-    EncoderLeft.setDistancePerPulse(DriveConstants.ENCODERDISTANCEPERPULSEINCHES);
-    EncoderRight.setDistancePerPulse(DriveConstants.ENCODERDISTANCEPERPULSEINCHES);
+    EncoderLeft.setDistancePerPulse(DriveConstants.ENCODER_DISTANCE_PER_PULSE_INCHES);
+    EncoderRight.setDistancePerPulse(DriveConstants.ENCODER_DISTANCE_PER_PULSE_INCHES);
   }
   // simple arcade drive with squared inputs
   public void arcadeDriveSquared(Double fwd, Double rot){
@@ -62,17 +61,16 @@ private final MotorControllerGroup ControlGroupLeftMotors =
   // Untested, this should should reduce the sensitivity of the steering 
   //based on the real speed of the tracks as read by the encoders
   public void arcadeDriveAdaptiveSteering(Double fwd, Double rot){
-    double adaptedrot= rot/(1+((EncoderLeft.getRate()+EncoderRight.getRate())*DriveConstants.ADAPTIVESTEERINGSENSITIVITY));
+    double adaptedrot= rot/(1+((EncoderLeft.getRate()+EncoderRight.getRate())*DriveConstants.ADAPTIVE_STEERING_SENSITIVITY));
     DiffDrive.arcadeDrive(Math.abs(fwd)*fwd, adaptedrot);
   }
-  
-
   
   // Untested, this should use PID to make it drive straight
   //it probably will have some issues as some of the values approach zero
   PIDController drivePID = new PIDController(0, 0, 0);//currently set to zero just to test how it reacts without PID
+ 
   public void driveStraightPID(Double fwd, Double rot){
-    double adaptedrot= rot/(1+((EncoderLeft.getRate()+EncoderRight.getRate())*DriveConstants.ADAPTIVESTEERINGSENSITIVITY));
+    double adaptedrot= rot/(1+((EncoderLeft.getRate()+EncoderRight.getRate())*DriveConstants.ADAPTIVE_STEERING_SENSITIVITY));
     double rightSpeedTarget= DifferentialDrive.arcadeDriveIK(fwd, adaptedrot, false).right;
     double leftSpeedTarget =DifferentialDrive.arcadeDriveIK(fwd, adaptedrot, false).left;;//no rotation
     double relativeLeft= (leftSpeedTarget!=0)?EncoderLeft.getRate()/leftSpeedTarget:0;
@@ -82,34 +80,17 @@ private final MotorControllerGroup ControlGroupLeftMotors =
     DiffDrive.tankDrive(leftSpeedTarget+PIDCorrection, rightSpeedTarget-PIDCorrection);
   }
 
-  
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
   public boolean exampleCondition() {
     // Query some boolean state, such as a digital sensor.
     return false;
   }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    
-  }
+  public void periodic() {}
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
 
-/**
-   * Returns a command that drives the robot with arcade controls.
-   *
-   * @param fwd the commanded forward movement
-   * @param rot the commanded rotation
-   */
   public CommandBase arcadeDriveSquaredCommand(DoubleSupplier fwd, DoubleSupplier rot) {
     // A split-stick arcade command, with forward/backward controlled by the left
     // hand, and turning controlled by the right.

@@ -4,39 +4,40 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+// Follows Target using the limelight
 public class FollowTargets extends CommandBase {
+
+    // Suppres warnings in the code, because we couldn't be bothered to fix them
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+
+    // Creates an instance of the Drive, and Limelight subsystem
     private DriveSubsystem m_DriveSubsystem;
     private LimelightSubsystem m_LimelightSubsystem;
-  
-    /**
-     * Creates a new ExampleCommand.
-     *
-     * @param subsystem The subsystem used by this command.
-     */
+
+    // Create Depenencies for the Command.
     public FollowTargets(DriveSubsystem subsystem_drive, LimelightSubsystem subsystem_limelight) {
+
        m_DriveSubsystem = subsystem_drive;
        m_LimelightSubsystem= subsystem_limelight;
-      // // Use addRequirements() here to declare subsystem dependencies.
+
        addRequirements(subsystem_drive);
-      // 
     }
   
-    // Called when the command is initially scheduled.
+    // Called when the command is initialized
     @Override
-    public void initialize() {
-      
-    }
+    public void initialize() {}
     
-    // Called every time the scheduler runs while the command is scheduled.
+    // Called every time the scheduler runs.
     @Override
     public void execute() {
       
-      // Use addRequirements() here to declare subsystem dependencies.
+      // Gets the targat position
       double targetPosition = m_LimelightSubsystem.getTargets()[0];
-      //double rot = Math.min(Math.max((targetPosition/5)*(Math.abs(targetPosition)/5),-0.8),0.6);//limit speed 
+      
+      // Rotates towards the target depending on where the target is
       double rot = Math.min(Math.max((targetPosition/Math.abs(targetPosition))*Math.sqrt(Math.abs(targetPosition/20)),-0.8),0.8);
       m_DriveSubsystem.arcadeDriveSquared(0.0,-rot);
+
     }
   
     // Called once the command ends or is interrupted.

@@ -1,17 +1,10 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-//import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import java.util.function.DoubleSupplier;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -19,10 +12,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SparkmaxMotor extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-
+  
   private CANSparkMax m_motor;
-  //private static int deviceID;
   private SparkMaxPIDController m_pidController;
   private RelativeEncoder m_encoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
@@ -30,7 +21,6 @@ public class SparkmaxMotor extends SubsystemBase {
   // **** feb 24 
   private double position = 0;
   private Timer Timer1;
-
 
   public SparkmaxMotor(int deviceID) {
     m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
@@ -59,7 +49,6 @@ public class SparkmaxMotor extends SubsystemBase {
     // **** feb 24
     Timer1 = new Timer();//
     //Timer1.start();//
-
   }
 
   private void runToTimer(){
@@ -70,52 +59,40 @@ public class SparkmaxMotor extends SubsystemBase {
   public void startTimer(){
     Timer1.start();//
   }
+  public double getEncoderValue(){
+    return this.m_encoder.getPosition();//
+  }
+
+
   private void runToposition(double targetPosition){
    
     m_pidController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
   }
+  private void runTopositionAndEncoder(double targetPosition){
+   
+    m_pidController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
+    LimelightSubsystem.setPipeline((int)this.m_encoder.getPosition());
+  }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  // public CommandBase exampleMethodCommand() {
-  //   // Inline construction of command goes here.
-  //   // Subsystem::RunOnce implicitly requires `this` subsystem.
-  //   return runOnce(
-  //       () -> {
-  //         LimeLightSubsystem.setPipeline(7);
-  //       });
-  // }
-
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
   public boolean exampleCondition() {
     // Query some boolean state, such as a digital sensor.
     return false;
   }
 
+  // This method will be called once per scheduler run
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    //runToTimer();
-  }
+  public void periodic() {}
 
+   // This method will be called once per scheduler run during simulation
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
 
 
   //Commands
   public CommandBase joystickMotorCommand(DoubleSupplier Yval) {
     // A split-stick arcade command, with forward/backward controlled by the left
     // hand, and turning controlled by the right.
-    return run(() -> this.runToposition(Yval.getAsDouble()))
+    return run(() -> this.runTopositionAndEncoder(Yval.getAsDouble()))
         .withName("Joystick Motor");
   }
 }
